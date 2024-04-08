@@ -20,7 +20,7 @@ app.use(express.json());
 
 //RUTAS
 //Crear rutas
-const rutas_articulo = require("../rutas/articulo");
+const rutas_articulo = require("./rutas/articulo");
 
 //Cargo las rutas
 app.use("/api", rutas_articulo)
