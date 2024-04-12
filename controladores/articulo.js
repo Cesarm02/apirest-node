@@ -70,11 +70,74 @@ const crear = (req, res) => {
     }).catch((err)=>{
         console.log(err);
     })
+}
+
+//Leer Articulos
+const listar = (req, res) => {
+
+    let consulta = Articulo.find({});
+
+    if(req.params.ultimos){
+        consulta.limit(req.params.ultimos);
+    }
+    
+    //Ordenar por fecha descendente
+    consulta.sort({fecha: -1})
+        .then((articulos) => {
+
+        if(!articulos){
+            return res.status(404).json({
+                status: "error",
+                mensaje: "No hay datos"
+            });
+        }
+
+        return res.status(200).json({
+            status: "success",
+            contador: articulos.length,
+            articulos,
+        })
+
+    }).catch((err)=>{
+        console.log(err);
+    });
+
+}
+
+//Conseguir un articulo
+const uno =  (req, res) => {
+
+    //Recoger id por la url
+    let id = req.params.id;
+
+    //Buscar el articulo
+    Articulo.findById(id)
+    .then(articulo => {
+        if(!articulo){
+            return res.status(404).json({
+                status: "error",
+                mensaje: "No encontrado"
+            });
+        }
+        return res.status(200).json({
+            status: "success",
+            articulo
+        })
+    })
+    .catch((err)=>{
+        console.log(err);
+    });;
+
+    //Si no existe deolver error
+
+    //Devolver resultado
 
 }
 
 module.exports = {
     prueba,
     curso,
-    crear
+    crear,
+    listar,
+    uno
 }
