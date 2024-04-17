@@ -12,8 +12,13 @@ router.post("/crear", ArticuloControlador.crear);
 
 //Ruta get
 router.get("/listar/:ultimos?", ArticuloControlador.listar);
-router.get("/articulo/:id", ArticuloControlador.uno)
+router.get("/articulo/:id", ArticuloControlador.uno);
 
+//Ruta delete
+router.delete("/articulo/:id", ArticuloControlador.borrar);
+
+//Ruta editar
+router.put("/articulo/:id", ArticuloControlador.editar);
 
 module.exports = router;
 

@@ -1,5 +1,5 @@
-const validator = require("validator");
 const Articulo = require("../modelos/Articulo");
+const { validarArticulo} = require("../helpers/validar")
 
 const prueba = (req, res) => {
 
@@ -32,21 +32,14 @@ const crear = (req, res) => {
 
     //Validar los datos
     try{
-
-        let validar_titulo = !validator.isEmpty(parametros.titulo) &&
-                validator.isLength(parametros.titulo, {min:5, max:25});
-        let validar_contenido = !validator.isEmpty(parametros.contenido);
-        
-        if(!validar_titulo || !validar_contenido){
-            throw new Error("No se ha validado la información");
-        }
-
+        validarArticulo(res, parametros);
     }catch(error){
         return res.status(400).json({
             status: "error",
             mensaje: "Faltan datos"
         });
     }
+
     //Crear el objeto a guardar
     const articulo = new Articulo(parametros);
 
@@ -134,10 +127,72 @@ const uno =  (req, res) => {
 
 }
 
+//Eliminar articulos
+const borrar = (req, res) => {
+    //Recoger id por la url
+    let articulo_id = req.params.id;
+
+    Articulo.findOneAndDelete({_id: articulo_id})
+    .then(articulo => {
+        if(!articulo){
+            return res.status(404).json({
+                status: "error",
+                mensaje: "No encontrado"
+            });
+        }
+        return res.status(200).json({
+            status: "Articulo eliminado correctamente"
+        })
+    })
+    .catch((err)=>{
+        console.log(err);
+    });;
+}
+
+
+const editar = (req, res) => {
+    let articulo_id = req.params.id;
+    
+    //Recoger datos del body
+    let parametros = req.body;
+    
+    //Validar datos
+    try{
+        validarArticulo(res, parametros);
+    }catch(error){
+        return res.status(400).json({
+            status: "error",
+            mensaje: "Faltan datos"
+        });
+    }
+
+    //Buscar y actualizar articulo
+    Articulo.findOneAndUpdate({_id: articulo_id}, parametros, {new: true})
+    .then((articuloActualizado) => {
+        if(!articuloActualizado){
+            return res.status(500).json({
+                status: "error",
+                mensaje: "Error al actualizar"
+            });
+        }
+        //Devolver respuesta
+        return res.status(200).json({
+            status: "success",
+            articulo: articuloActualizado
+        })
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+
+}
+
 module.exports = {
     prueba,
     curso,
     crear,
     listar,
-    uno
+    uno,
+    borrar,
+    editar
 }
